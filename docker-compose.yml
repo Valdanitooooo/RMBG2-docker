@@ -1,0 +1,23 @@
+name: "rmbg2"
+services:
+
+  rmbg2:
+    env_file:
+      - path: .env
+        required: true
+    image: ${DOCKER_IMAGE_APP_BASE}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [ gpu ]
+              driver: nvidia
+              count: all
+    volumes:
+      - ./app:/app
+      - ${MODEL_DIR}:/models
+    ports:
+      - ${IP:-0.0.0.0}:${APP_PORT}:8000
+    command: python3 -u /app/main.py 2>&1 | tee /var/log/app.log
+
+
